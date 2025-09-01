@@ -1,0 +1,7 @@
+paramiko>=3.0.0
+fastapi
+uvicorn[standard]
+flask
+requests
+geoip2       # optional (if you download GeoLite2 DB)
+python-multipart   # optional if you add uploads later

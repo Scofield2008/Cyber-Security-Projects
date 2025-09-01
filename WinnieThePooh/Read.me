@@ -1,0 +1,10 @@
+git clone <repo>
+cd winniethepooh
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+ssh-keygen -t rsa -f host_rsa.key -N ""
+python winnie_db.py            # initialize DB
+python honeypot_ssh.py        # start ssh honeypot on :2222
+python honeypot_http.py       # start http honeypot on :8080
+uvicorn dashboard:app --port 8000
