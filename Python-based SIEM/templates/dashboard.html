@@ -1,0 +1,22 @@
+<!-- templates/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini SIEM Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-6">
+    <h1 class="text-3xl font-bold mb-4">Mini SIEM Dashboard</h1>
+    <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+        <h2 class="text-xl mb-2">Alerts</h2>
+        <ul class="space-y-2">
+            {% for alert in alerts %}
+                <li class="bg-red-600 p-2 rounded">{{ alert }}</li>
+            {% else %}
+                <li class="text-gray-400">No alerts detected.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
