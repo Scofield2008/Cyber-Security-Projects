@@ -1,10 +1,67 @@
-git clone <repo>
-cd winniethepooh
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-ssh-keygen -t rsa -f host_rsa.key -N ""
-python winnie_db.py            # initialize DB
-python honeypot_ssh.py        # start ssh honeypot on :2222
-python honeypot_http.py       # start http honeypot on :8080
-uvicorn dashboard:app --port 8000
+🐻 Winnie the Pooh – Honeypot Project
+📖 Overview
+Winnie the Pooh is a cybersecurity honeypot designed to attract, detect, and log malicious activity. Inspired by the famous bear’s love for honey, this project serves as a trap for attackers who “can’t resist the honey.”
+The system simulates multiple services and vulnerabilities that hackers commonly target, while secretly recording their activity for analysis and defense improvements.
+
+✨ Features
+🍯 Honeypot HTTP
+.Mimics a vulnerable web server.
+
+.Logs malicious requests, payloads, and attempted exploits.
+
+.Helps in studying web-based attack patterns (SQLi, XSS, LFI, etc.).
+
+🔑 Honeypot SSH
+
+.Emulates an insecure SSH server with weak/default credentials.
+
+.Captures brute-force attempts and executed commands.
+
+.Useful for analyzing attacker behavior once “inside” a system.
+
+🌐 Honeypot Website
+
+.Fake vulnerable web application hosted for attackers.
+
+.Logs form submissions, admin panel brute-forcing, and injection attempts.
+
+.Allows red-team/blue-team exercises.
+
+🎹 Keylogger
+
+.Once an attacker gains access, a silent keylogger activates.
+
+.Records keystrokes and command inputs.
+
+.Provides real insights into attacker intentions and next steps.
+
+⚙️ Code Functionality
+
+.The code is structured to simulate services and capture data:
+
+.HTTP & Website Modules → Create fake web servers with hidden logging.
+
+.SSH Module → Provides a fake SSH shell environment that records inputs.
+
+.Keylogger Module → Captures keystrokes when attackers interact with the honeypot.
+
+.Logging System → Saves IPs, timestamps, payloads, and keystrokes for later analysis.
+
+.Each function of the code is designed to look and feel legitimate to attackers, but its hidden purpose is observation and data collection.
+
+🎯 Purpose & Impact
+
+🛡 Defensive Learning – Helps cybersecurity teams understand modern attack methods.
+
+📊 Threat Intelligence – Provides raw data on attacker tools, payloads, and behaviors.
+
+🎓 Educational Tool – Useful for students and researchers to practice ethical hacking and defense.
+
+🌍 Community Contribution – Can contribute to global honeypot networks, strengthening security awareness.
+
+By studying how attackers interact with Winnie the Pooh, organizations and researchers gain valuable insights into real-world threats and how to defend against them.
+
+⚠️ Disclaimer
+
+This project is for educational and research purposes only.
+Deploy it only in controlled environments. The authors are not responsible for misuse or illegal deployment.
