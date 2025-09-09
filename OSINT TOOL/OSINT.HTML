@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT/Recon Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #495057;
+            border-bottom: 3px solid #007bff;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .tab-content {
+            padding: 30px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .tool-section {
+            margin-bottom: 30px;
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+
+        .tool-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .results-container {
+            margin-top: 30px;
+        }
+
+        .results-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .results-content {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 10px;
+            border-left: 4px solid #007bff;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 0 6px 6px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+
+        .warning-box h4 {
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .export-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 OSINT/Recon Toolkit</h1>
+            <p>Professional reconnaissance and intelligence gathering suite</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('subdomain')">Subdomain Enumeration</button>
+            <button class="nav-tab" onclick="showTab('ports')">Port Scanning</button>
+            <button class="nav-tab" onclick="showTab('leaks')">Leak Detection</button>
+            <button class="nav-tab" onclick="showTab('reports')">Reports</button>
+        </div>
+
+        <div class="tab-content">
+            <!-- Subdomain Enumeration Tab -->
+            <div id="subdomain" class="tab-pane active">
+                <div class="warning-box">
+                    <h4>⚠️ Ethical Use Notice</h4>
+                    <p>This toolkit is designed for authorized security testing, research, and educational purposes only. Always obtain proper permission before scanning any domains or systems you do not own.</p>
+                </div>
+
+                <div class="tool-section">
+                    <div class="tool-header">
+                        <div class="tool-icon">🌐</div>
+                        <h3 class="tool-title">Subdomain Discovery</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Target Domain</label>
+                        <input type="text" id="subdomainTarget" class="form-input" placeholder="example.com" />
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="startSubdomainEnum()">🚀 Start Enumeration</button>
+                    <button class="btn btn-secondary" onclick="clearResults('subdomain-results')">🗑️ Clear Results</button>
+                </div>
+
+                <div id="subdomain-results" class="results-container" style="display: none;">
+                    <div class="results-header">
+                        <span>📊 Subdomain Enumeration Results</span>
+                    </div>
+                    <div class="results-content" id="subdomain-content"></div>
+                </div>
+            </div>
+
+            <!-- Port Scanning Tab -->
+            <div id="ports" class="tab-pane">
+                <div class="warning-box">
+                    <h4>⚠️ Legal Disclaimer</h4>
+                    <p>Port scanning should only be performed on systems you own or have explicit permission to test. Unauthorized port scanning may violate local laws and regulations.</p>
+                </div>
+
+                <div class="tool-section">
+                    <div class="tool-header">
+                        <div class="tool-icon">🔌</div>
+                        <h3 class="tool-title">Port Scanner</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Target Host</label>
+                        <input type="text" id="portTarget" class="form-input" placeholder="192.168.1.1 or example.com" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Port Range</label>
+                        <input type="text" id="portRange" class="form-input" placeholder="1-1000 or 80,443,8080" value="1-1000" />
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="startPortScan()">🔍 Start Scan</button>
+                    <button class="btn btn-secondary" onclick="clearResults('port-results')">🗑️ Clear Results</button>
+                </div>
+
+                <div id="port-results" class="results-container" style="display: none;">
+                    <div class="results-header">
+                        <span>🔌 Port Scan Results</span>
+                    </div>
+                    <div class="results-content" id="port-content"></div>
+                </div>
+            </div>
+
+            <!-- Leak Detection Tab -->
+            <div id="leaks" class="tab-pane">
+                <div class="warning-box">
+                    <h4>🔒 Privacy Notice</h4>
+                    <p>This tool simulates leak detection using publicly available information. In a real implementation, this would check various breach databases and public repositories.</p>
+                </div>
+
+                <div class="tool-section">
+                    <div class="tool-header">
+                        <div class="tool-icon">💧</div>
+                        <h3 class="tool-title">Data Leak Detection</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Domain or Email</label>
+                        <input type="text" id="leakTarget" class="form-input" placeholder="example.com or user@example.com" />
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="startLeakDetection()">🔍 Check for Leaks</button>
+                    <button class="btn btn-secondary" onclick="clearResults('leak-results')">🗑️ Clear Results</button>
+                </div>
+
+                <div id="leak-results" class="results-container" style="display: none;">
+                    <div class="results-header">
+                        <span>💧 Leak Detection Results</span>
+                    </div>
+                    <div class="results-content" id="leak-content"></div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reports" class="tab-pane">
+                <div class="tool-section">
+                    <div class="tool-header">
+                        <div class="tool-icon">📊</div>
+                        <h3 class="tool-title">Reconnaissance Report</h3>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="subdomainCount">0</div>
+                            <div class="stat-label">Subdomains Found</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="openPortCount">0</div>
+                            <div class="stat-label">Open Ports</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="leakCount">0</div>
+                            <div class="stat-label">Potential Leaks</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="scanTime">0</div>
+                            <div class="stat-label">Total Scan Time (s)</div>
+                        </div>
+                    </div>
+
+                    <div class="export-section">
+                        <h4>📄 Export Options</h4>
+                        <button class="btn btn-success" onclick="exportJSON()">📁 Export JSON</button>
+                        <button class="btn btn-success" onclick="exportCSV()">📊 Export CSV</button>
+                        <button class="btn btn-success" onclick="exportHTML()">🌐 Export HTML Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global data storage
+        let scanData = {
+            subdomains: [],
+            ports: [],
+            leaks: [],
+            startTime: null,
+            totalScanTime: 0
+        };
+
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tab panes
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab pane
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Simulate subdomain enumeration
+        function startSubdomainEnum() {
+            const target = document.getElementById('subdomainTarget').value.trim();
+            if (!target) {
+                alert('Please enter a target domain');
+                return;
+            }
+
+            scanData.startTime = Date.now();
+            showResults('subdomain-results');
+            showLoading('subdomain-content');
+
+            // Simulate subdomain discovery
+            setTimeout(() => {
+                const subdomains = generateSubdomains(target);
+                scanData.subdomains = subdomains;
+                displayResults('subdomain-content', subdomains, 'subdomain');
+                updateStats();
+            }, 3000);
+        }
+
+        // Simulate port scanning
+        function startPortScan() {
+            const target = document.getElementById('portTarget').value.trim();
+            const portRange = document.getElementById('portRange').value.trim();
+            
+            if (!target) {
+                alert('Please enter a target host');
+                return;
+            }
+
+            scanData.startTime = Date.now();
+            showResults('port-results');
+            showLoading('port-content');
+
+            // Simulate port scanning
+            setTimeout(() => {
+                const ports = generatePortResults(target, portRange);
+                scanData.ports = ports;
+                displayResults('port-content', ports, 'port');
+                updateStats();
+            }, 4000);
+        }
+
+        // Simulate leak detection
+        function startLeakDetection() {
+            const target = document.getElementById('leakTarget').value.trim();
+            if (!target) {
+                alert('Please enter a domain or email');
+                return;
+            }
+
+            scanData.startTime = Date.now();
+            showResults('leak-results');
+            showLoading('leak-content');
+
+            // Simulate leak detection
+            setTimeout(() => {
+                const leaks = generateLeakResults(target);
+                scanData.leaks = leaks;
+                displayResults('leak-content', leaks, 'leak');
+                updateStats();
+            }, 2500);
+        }
+
+        // Generate mock subdomain results
+        function generateSubdomains(domain) {
+            const commonSubs = ['www', 'mail', 'ftp', 'admin', 'api', 'dev', 'staging', 'test', 'blog', 'shop', 'support', 'cdn', 'assets', 'images'];
+            const results = [];
+            
+            commonSubs.forEach(sub => {
+                if (Math.random() > 0.3) {
+                    const ip = `${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
+                    results.push({
+                        subdomain: `${sub}.${domain}`,
+                        ip: ip,
+                        status: Math.random() > 0.1 ? 'Active' : 'Inactive'
+                    });
+                }
+            });
+
+            return results;
+        }
+
+        // Generate mock port scan results
+        function generatePortResults(target, portRange) {
+            const commonPorts = [21, 22, 23, 25, 53, 80, 110, 143, 443, 993, 995, 3389, 5432, 3306, 8080, 8443];
+            const services = {
+                21: 'FTP', 22: 'SSH', 23: 'Telnet', 25: 'SMTP', 53: 'DNS', 80: 'HTTP',
+                110: 'POP3', 143: 'IMAP', 443: 'HTTPS', 993: 'IMAPS', 995: 'POP3S',
+                3389: 'RDP', 5432: 'PostgreSQL', 3306: 'MySQL', 8080: 'HTTP-Alt', 8443: 'HTTPS-Alt'
+            };
+            
+            const results = [];
+            commonPorts.forEach(port => {
+                if (Math.random() > 0.7) {
+                    results.push({
+                        port: port,
+                        service: services[port] || 'Unknown',
+                        state: 'Open',
+                        banner: `${services[port] || 'Unknown'} Service Banner`
+                    });
+                }
+            });
+
+            return results;
+        }
+
+        // Generate mock leak detection results
+        function generateLeakResults(target) {
+            const mockBreaches = [
+                'DataBreach2023', 'LeakDB2022', 'HackedSite2021', 'BreachCollection2020'
+            ];
+            
+            const results = [];
+            if (Math.random() > 0.5) {
+                mockBreaches.forEach(breach => {
+                    if (Math.random() > 0.6) {
+                        results.push({
+                            breach: breach,
+                            date: `${Math.floor(Math.random()*12)+1}/${Math.floor(Math.random()*28)+1}/${2020+Math.floor(Math.random()*4)}`,
+                            data_types: ['Email', 'Password', 'Username'][Math.floor(Math.random()*3)],
+                            severity: ['Low', 'Medium', 'High'][Math.floor(Math.random()*3)]
+                        });
+                    }
+                });
+            }
+
+            return results;
+        }
+
+        // Display results
+        function displayResults(containerId, results, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            if (results.length === 0) {
+                container.innerHTML = '<div class="result-item">No results found</div>';
+                return;
+            }
+
+            results.forEach(result => {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result-item';
+                
+                switch(type) {
+                    case 'subdomain':
+                        resultDiv.innerHTML = `
+                            <strong>${result.subdomain}</strong> → ${result.ip} 
+                            <span style="color: ${result.status === 'Active' ? 'green' : 'red'};">[${result.status}]</span>
+                        `;
+                        break;
+                    case 'port':
+                        resultDiv.innerHTML = `
+                            <strong>Port ${result.port}</strong> - ${result.service} 
+                            <span style="color: green;">[${result.state}]</span><br>
+                            <small>${result.banner}</small>
+                        `;
+                        break;
+                    case 'leak':
+                        resultDiv.innerHTML = `
+                            <strong>${result.breach}</strong> - ${result.date}<br>
+                            Data: ${result.data_types} | Severity: 
+                            <span style="color: ${result.severity === 'High' ? 'red' : result.severity === 'Medium' ? 'orange' : 'green'};">
+                                ${result.severity}
+                            </span>
+                        `;
+                        break;
+                }
+                
+                container.appendChild(resultDiv);
+            });
+        }
+
+        // Show loading animation
+        function showLoading(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span>Scanning in progress...</span>
+                </div>
+            `;
+        }
+
+        // Show results container
+        function showResults(containerId) {
+            document.getElementById(containerId).style.display = 'block';
+        }
+
+        // Clear results
+        function clearResults(containerId) {
+            document.getElementById(containerId).style.display = 'none';
+        }
+
+        // Update statistics
+        function updateStats() {
+            if (scanData.startTime) {
+                scanData.totalScanTime = Math.floor((Date.now() - scanData.startTime) / 1000);
+            }
+
+            document.getElementById('subdomainCount').textContent = scanData.subdomains.length;
+            document.getElementById('openPortCount').textContent = scanData.ports.length;
+            document.getElementById('leakCount').textContent = scanData.leaks.length;
+            document.getElementById('scanTime').textContent = scanData.totalScanTime;
+        }
+
+        // Export functions
+        function exportJSON() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                scan_results: scanData,
+                tool: 'OSINT/Recon Toolkit'
+            };
+            
+            downloadFile(JSON.stringify(data, null, 2), 'osint_report.json', 'application/json');
+        }
+
+        function exportCSV() {
+            let csv = 'Type,Target,Details,Status,Timestamp\n';
+            
+            scanData.subdomains.forEach(sub => {
+                csv += `Subdomain,"${sub.subdomain}","IP: ${sub.ip}","${sub.status}","${new Date().toISOString()}"\n`;
+            });
+            
+            scanData.ports.forEach(port => {
+                csv += `Port,"Port ${port.port}","Service: ${port.service}","${port.state}","${new Date().toISOString()}"\n`;
+            });
+            
+            scanData.leaks.forEach(leak => {
+                csv += `Leak,"${leak.breach}","Data: ${leak.data_types}","${leak.severity}","${leak.date}"\n`;
+            });
+            
+            downloadFile(csv, 'osint_report.csv', 'text/csv');
+        }
+
+        function exportHTML() {
+            const htmlReport = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OSINT Reconnaissance Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #2c3e50; }
+        .section { margin: 30px 0; }
+        .result { background: #f8f9fa; padding: 10px; margin: 5px 0; border-left: 4px solid #007bff; }
+        .stats { display: flex; gap: 20px; margin: 20px 0; }
+        .stat { background: #e9ecef; padding: 20px; border-radius: 8px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>🔍 OSINT Reconnaissance Report</h1>
+    <p>Generated on: ${new Date().toLocaleString()}</p>
+    
+    <div class="stats">
+        <div class="stat">
+            <h3>${scanData.subdomains.length}</h3>
+            <p>Subdomains Found</p>
+        </div>
+        <div class="stat">
+            <h3>${scanData.ports.length}</h3>
+            <p>Open Ports</p>
+        </div>
+        <div class="stat">
+            <h3>${scanData.leaks.length}</h3>
+            <p>Potential Leaks</p>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Subdomain Results</h2>
+        ${scanData.subdomains.map(sub => `<div class="result">${sub.subdomain} → ${sub.ip} [${sub.status}]</div>`).join('')}
+    </div>
+    
+    <div class="section">
+        <h2>Port Scan Results</h2>
+        ${scanData.ports.map(port => `<div class="result">Port ${port.port} - ${port.service} [${port.state}]</div>`).join('')}
+    </div>
+    
+    <div class="section">
+        <h2>Leak Detection Results</h2>
+        ${scanData.leaks.map(leak => `<div class="result">${leak.breach} - ${leak.date} | Data: ${leak.data_types} | Severity: ${leak.severity}</div>`).join('')}
+    </div>
+</body>
+</html>`;
+            
+            downloadFile(htmlReport, 'osint_report.html', 'text/html');
+        }
+
+        // Download file helper
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 OSINT/Recon Toolkit initialized');
+        });
+    </script>
+</body>
+</html>
