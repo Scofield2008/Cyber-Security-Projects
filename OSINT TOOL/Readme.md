@@ -116,27 +116,6 @@ The OSINT/Recon Toolkit is a professional-grade web application that automates c
 4. Review potential data breaches and exposure
 ```
 
-## 📸 Screenshots
-
-### Main Dashboard
-[INSERT SCREENSHOT HERE]
-*Overview of the main dashboard showing the modern UI and navigation*
-
-### Subdomain Enumeration
-[INSERT SCREENSHOT HERE]
-*Subdomain discovery in action with results panel*
-
-### Port Scanning Interface
-[INSERT SCREENSHOT HERE]
-*Port scanning configuration and results display*
-
-### Leak Detection Results
-[INSERT SCREENSHOT HERE]
-*Data leak detection interface showing breach information*
-
-### Reports and Export
-[INSERT SCREENSHOT HERE]
-*Statistics dashboard and export options*
 
 ## ⚖️ Legal Disclaimer
 
@@ -197,5 +176,6 @@ If you have any questions or need support:
 - Follow ethical usage guidelines
 
 ---
+
 
 **⚠️ Remember: With great power comes great responsibility. Use this tool ethically and legally.**
